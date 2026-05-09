@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Vitality Pro | Workout Tracker (Reorder Exercises)</title>
+    <title>Vitality Pro | الإصدار النهائي (ثبات الـ Sets)</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff8c42">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -148,7 +148,7 @@
     <button class="tab-link" data-tab="tab2">🏋️ Workout Tracker</button>
 </div>
 
-<!-- Vitality Pro Tab (مختصر ولكن كامل في النهائي) -->
+<!-- Vitality Pro Tab -->
 <div id="tab1" class="tab-content active">
     <div class="vitality-container">
         <div class="timer-section">
@@ -251,7 +251,7 @@
 <div id="planEditorModal" class="modal"><div class="modal-content"><span class="close" id="closeEditor">&times;</span><h3>📝 Edit Future Plan (Sets, Target Reps & Extra Rows)</h3><div id="planEditorContainer"></div><button id="savePlanBtn" class="primary">💾 Save</button></div></div>
 
 <script>
-    // ======================== VITALITY PRO (Baseline HR) ========================
+    // ======================== VITALITY PRO ========================
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let selKey = null;
     let flagsV = { core: false, gym: false, cardio: false };
@@ -358,7 +358,7 @@
     function importVitalityData(event){ const file=event.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=function(e){ localStorage.setItem('vEliteFinal',e.target.result); location.reload(); }; reader.readAsText(file); }
     initVitality();
 
-    // ======================== WORKOUT TRACKER (FULLY FIXED + EXERCISE REORDER) ========================
+    // ======================== WORKOUT TRACKER (FIXED – SETS NEVER LOST) ========================
     function parseRepsValue(repsStr) { if (!repsStr) return NaN; const match = String(repsStr).match(/(\d+(\.\d+)?)/); return match ? parseFloat(match[1]) : NaN; }
     function extractWeightNumber(w) { if (!w) return null; const s = w.toString().toLowerCase(); if (s.includes("free")) return 0; const match = s.match(/(\d+(\.\d+)?)/); return match ? parseFloat(match[0]) : null; }
     function extractHoldFromWeight(w){ if(!w) return ""; let m=w.match(/hold(\d+)/i); return m?m[1]:(w.match(/hold\s*(\d+)/i)?.[1]||""); }
@@ -388,14 +388,18 @@
         "Dumbbell Shoulder Press":"4","Dumbbell Lateral Raise":"4","Dumbbell Incline Press":"4","Dumbbell Flat Bench Press":"3","Dumbbell Front Raise (45° chest)":"3","Dumbbell Tricep Lying Extension":"3",
         "Dumbbell Bulgarian Split Squat":"4","Dumbbell Reverse Lunge":"3","Dumbbell RDL":"4","Dumbbell Goblet Squat":"3","Dumbbell Calf Raises (Stand)":"4","Dumbbell Calf Raises (Seated)":"3",
         "Pull-ups (Chin-up)":"3","Dumbbell Row (Two Arm)":"3","Dumbbell Pullover":"3","Dumbbell Rear Delt Fly":"3","Dumbbell Incline Bicep Curl":"3","Single Arm Overhead Tricep Extension":"3","Dumbbell Concentration Curl":"3","Dumbbell Kickbacks":"3",
-        "Dumbbell Close Grip Press":"3","Dumbbell Shoulder Press":"3","Dumbbell Lateral Raise":"4","Dumbbell Incline Press":"3","Dumbbell Fly":"3","Dumbbell Front Raise":"3","Dumbbell Shrugs":"3"
+        "Dumbbell Close Grip Press":"3","Dumbbell Shoulder Press":"3","Dumbbell Lateral Raise":"4","Dumbbell Incline Press":"3","Dumbbell Fly":"3","Dumbbell Front Raise":"3","Dumbbell Shrugs":"3",
+        // القيم المهمة لـ Hola و Around the
+        "Hola 🗣️":"3","Around the 🌎":"3","Hola":"3","Around the":"3",
+        "Hola 🏋️‍♂️":"3","Around the 🏋️‍♂️":"3"
     };
     const defaultTargetRepsMap = {
         "Pull-ups (Wide Grip)":"10-15","Dumbbell Row (One Arm)":"10-12","Dumbbell Pullover":"12-15","Dumbbell Rear Delt Fly":"12-15","Dumbbell Shrugs":"12-15","Dumbbell Hammer Curl":"8-12",
         "Dumbbell Shoulder Press":"8-12","Dumbbell Lateral Raise":"12-15","Dumbbell Incline Press":"8-12","Dumbbell Flat Bench Press":"8-12","Dumbbell Front Raise (45° chest)":"12-15","Dumbbell Tricep Lying Extension":"10-15",
         "Dumbbell Bulgarian Split Squat":"8-12","Dumbbell Reverse Lunge":"10-12","Dumbbell RDL":"10-15","Dumbbell Goblet Squat":"10-15","Dumbbell Calf Raises (Stand)":"15-25","Dumbbell Calf Raises (Seated)":"15-25",
         "Pull-ups (Chin-up)":"8-12","Dumbbell Row (Two Arm)":"8-12","Dumbbell Pullover":"12-15","Dumbbell Rear Delt Fly":"12-15","Dumbbell Incline Bicep Curl":"10-15","Single Arm Overhead Tricep Extension":"10-15","Dumbbell Concentration Curl":"10-12","Dumbbell Kickbacks":"12-15",
-        "Dumbbell Close Grip Press":"8-12","Dumbbell Shoulder Press":"8-12","Dumbbell Lateral Raise":"12-15","Dumbbell Incline Press":"8-12","Dumbbell Fly":"10-15","Dumbbell Front Raise":"12-15","Dumbbell Shrugs":"12-15"
+        "Dumbbell Close Grip Press":"8-12","Dumbbell Shoulder Press":"8-12","Dumbbell Lateral Raise":"12-15","Dumbbell Incline Press":"8-12","Dumbbell Fly":"10-15","Dumbbell Front Raise":"12-15","Dumbbell Shrugs":"12-15",
+        "Hola 🗣️":"20","Around the 🌎":"20","Hola":"20","Around the":"20","Hola 🏋️‍♂️":"20","Around the 🏋️‍♂️":"20"
     };
     const compoundExercises = [
         "Pull-ups (Wide Grip)", "Dumbbell Row (One Arm)", "Dumbbell Pullover", "Dumbbell Shrugs",
@@ -535,6 +539,7 @@
                 if(weekData[key] && (!weekData[key].sets || weekData[key].sets === "")){
                     if(plan.exerciseSets && plan.exerciseSets[ex]) weekData[key].sets = plan.exerciseSets[ex];
                     else if(defaultSetsMap[ex]) weekData[key].sets = defaultSetsMap[ex];
+                    else weekData[key].sets = "3";
                 }
             }
         }
@@ -681,121 +686,196 @@
     function makeTapFriendly(el){ el.addEventListener('touchstart',(e)=>{ e.stopPropagation(); el.focus(); }); el.addEventListener('click',(e)=>{ e.stopPropagation(); el.focus(); }); }
     function updateCell(week, rowKey, field, value) { if (!week.data[rowKey]) week.data[rowKey]=getEmptyRowData(); week.data[rowKey][field]=value; if(field==='weight') week.data[rowKey].holdSec=extractHoldFromWeight(value); saveAllData(); updateSummaryOnly(); renderTable(); }
 
+    // ======================== التصحيح الجذري لقيم Sets ========================
     function renderTable(){
         if(allWeeks.length===0) initDefaultWeeks();
-        const week=allWeeks[currentWeekIndex];
-        const rows=buildRowListFromPlan(week.plan,week.startDate);
-        const thead=document.getElementById("tableHead");
-        const tbody=document.getElementById("tableBody");
-        thead.innerHTML=`<tr><th>Exercise</th><th>Wt</th><th>Sets</th><th>Reps</th><th>Tgt</th><th>Hold</th><th>Dur</th><th>Var/Notes</th></tr>`;
-        tbody.innerHTML="";
-        const durationsMap={};
-        for(let r of rows) if(r.type==="separator") durationsMap[r.date]=getDailyDuration(r.date);
+        const week = allWeeks[currentWeekIndex];
+        const rows = buildRowListFromPlan(week.plan, week.startDate);
+        const thead = document.getElementById("tableHead");
+        const tbody = document.getElementById("tableBody");
+        thead.innerHTML = `<tr><th>Exercise</th><th>Wt</th><th>Sets</th><th>Reps</th><th>Tgt</th><th>Hold</th><th>Dur</th><th>Var/Notes</th></tr>`;
+        tbody.innerHTML = "";
+        const durationsMap = {};
+        for(let r of rows) if(r.type === "separator") durationsMap[r.date] = getDailyDuration(r.date);
+        
         for(let row of rows){
-            if(row.type==="separator"){
-                const tr=document.createElement("tr");
-                const td=document.createElement("td"); td.colSpan=8;
-                let displayText=row.name;
-                const durSec=durationsMap[row.date];
-                if(durSec) displayText+=` [Duration: ${formatWorkoutTime(durSec)}]`;
-                td.textContent=displayText; td.style.backgroundColor="#d1ecf1"; td.style.fontWeight="bold"; td.style.textAlign="center";
-                tr.appendChild(td); tbody.appendChild(tr);
+            if(row.type === "separator"){
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.colSpan = 8;
+                let displayText = row.name;
+                const durSec = durationsMap[row.date];
+                if(durSec) displayText += ` [Duration: ${formatWorkoutTime(durSec)}]`;
+                td.textContent = displayText;
+                td.style.backgroundColor = "#d1ecf1";
+                td.style.fontWeight = "bold";
+                td.style.textAlign = "center";
+                tr.appendChild(td);
+                tbody.appendChild(tr);
                 continue;
             }
-            if(row.type==="rest"){
-                const tr=document.createElement("tr"); tr.className="rest-row";
-                const td=document.createElement("td"); td.colSpan=8; td.textContent="🛌 Rest Day - No training";
-                tr.appendChild(td); tbody.appendChild(tr);
+            if(row.type === "rest"){
+                const tr = document.createElement("tr");
+                tr.className = "rest-row";
+                const td = document.createElement("td");
+                td.colSpan = 8;
+                td.textContent = "🛌 Rest Day - No training";
+                tr.appendChild(td);
+                tbody.appendChild(tr);
                 continue;
             }
-            const key=getRowKey(row);
-            let data=week.data[key]||getEmptyRowData();
-            const tr=document.createElement("tr");
-            const tdName=document.createElement("td"); tdName.className="exercise-name";
-            const nameSpan=document.createElement("span"); nameSpan.textContent=row.name;
-            const restBtn=document.createElement("button"); restBtn.innerHTML="⏱️ R"; restBtn.className="rest-btn-inline";
-            const defaultSec=getDefaultRestSeconds(row.name);
-            restBtn.addEventListener("click",(function(k,sec){ requestNotificationPermission(); return function(){ startRestTimer(k,sec,restBtn); }; })(key,defaultSec));
-            tdName.appendChild(nameSpan); tdName.appendChild(restBtn); tr.appendChild(tdName);
+            const key = getRowKey(row);
+            let data = week.data[key] || getEmptyRowData();
+            const tr = document.createElement("tr");
             
-            const tdWeight=document.createElement("td");
-            tdWeight.setAttribute('data-rowkey',key); tdWeight.setAttribute('data-field','weight');
-            if(row.type==="extra"){
-                const wrapper=document.createElement("div"); wrapper.className="extra-row-weight";
-                const icon=document.createElement("span"); icon.textContent="🏋️"; icon.className="extra-icon";
-                const inp=document.createElement("input"); inp.type="text"; inp.value=data.weight||""; inp.placeholder="rounds/time"; inp.style.width="70px";
-                inp.addEventListener("change",(function(k,wk){ return function(e){ updateCell(wk,k,'weight',e.target.value); }; })(key,week));
+            // Exercise name + rest button
+            const tdName = document.createElement("td");
+            tdName.className = "exercise-name";
+            const nameSpan = document.createElement("span");
+            nameSpan.textContent = row.name;
+            const restBtn = document.createElement("button");
+            restBtn.innerHTML = "⏱️ R";
+            restBtn.className = "rest-btn-inline";
+            const defaultSec = getDefaultRestSeconds(row.name);
+            restBtn.addEventListener("click", (function(k,sec){ requestNotificationPermission(); return function(){ startRestTimer(k,sec,restBtn); }; })(key, defaultSec));
+            tdName.appendChild(nameSpan);
+            tdName.appendChild(restBtn);
+            tr.appendChild(tdName);
+            
+            // Weight
+            const tdWeight = document.createElement("td");
+            tdWeight.setAttribute('data-rowkey', key);
+            tdWeight.setAttribute('data-field', 'weight');
+            if(row.type === "extra"){
+                const wrapper = document.createElement("div");
+                wrapper.className = "extra-row-weight";
+                const icon = document.createElement("span");
+                icon.textContent = "🏋️";
+                icon.className = "extra-icon";
+                const inp = document.createElement("input");
+                inp.type = "text";
+                inp.value = data.weight || "";
+                inp.placeholder = "rounds/time";
+                inp.style.width = "70px";
+                inp.addEventListener("change", (function(k,wk){ return function(e){ updateCell(wk,k,'weight',e.target.value); }; })(key, week));
                 makeTapFriendly(inp);
-                wrapper.appendChild(icon); wrapper.appendChild(inp); tdWeight.appendChild(wrapper);
+                wrapper.appendChild(icon);
+                wrapper.appendChild(inp);
+                tdWeight.appendChild(wrapper);
             } else {
-                const inp=document.createElement("input"); inp.value=data.weight||""; inp.placeholder="kg";
-                inp.addEventListener("change",(function(k,wk){ return function(e){ updateCell(wk,k,'weight',e.target.value); }; })(key,week));
-                makeTapFriendly(inp); tdWeight.appendChild(inp);
+                const inp = document.createElement("input");
+                inp.value = data.weight || "";
+                inp.placeholder = "kg";
+                inp.addEventListener("change", (function(k,wk){ return function(e){ updateCell(wk,k,'weight',e.target.value); }; })(key, week));
+                makeTapFriendly(inp);
+                tdWeight.appendChild(inp);
             }
             tr.appendChild(tdWeight);
             
-            // Sets - غير قابل للتعديل
-            const tdSets=document.createElement("td"); tdSets.style.backgroundColor="#f0f0f0";
+            // Sets - البحث المتسلسل الصحيح
+            const tdSets = document.createElement("td");
+            tdSets.style.backgroundColor = "#f0f0f0";
             let setsValue = "";
+            // 1- بيانات المستخدم المحفوظة
             if(data.sets && data.sets !== "") setsValue = data.sets;
+            // 2- خطة الأسبوع الحالي
             else if(week.plan.exerciseSets && week.plan.exerciseSets[row.name]) setsValue = week.plan.exerciseSets[row.name];
+            // 3- الخطة المستقبلية (futurePlan) - هام جداً
+            else if(futurePlan.exerciseSets && futurePlan.exerciseSets[row.name]) setsValue = futurePlan.exerciseSets[row.name];
+            // 4- القيم الافتراضية
             else if(defaultSetsMap[row.name]) setsValue = defaultSetsMap[row.name];
-            tdSets.textContent = setsValue || ""; 
+            // 5- قيمة نهائية 3
+            else setsValue = "3";
+            tdSets.textContent = setsValue;
             tr.appendChild(tdSets);
             
-            const tdReps=document.createElement("td");
-            if(row.type==="extra"){
-                const wrapper=document.createElement("div"); wrapper.className="extra-row-reps";
-                const icon=document.createElement("span"); icon.textContent="📝"; icon.className="extra-icon";
-                const inp=document.createElement("input"); inp.type="text"; inp.value=data.reps||""; inp.placeholder="notes"; inp.style.width="70px";
-                inp.addEventListener("change",(function(k,wk){ return function(e){ updateCell(wk,k,'reps',e.target.value); }; })(key,week));
+            // Reps
+            const tdReps = document.createElement("td");
+            if(row.type === "extra"){
+                const wrapper = document.createElement("div");
+                wrapper.className = "extra-row-reps";
+                const icon = document.createElement("span");
+                icon.textContent = "📝";
+                icon.className = "extra-icon";
+                const inp = document.createElement("input");
+                inp.type = "text";
+                inp.value = data.reps || "";
+                inp.placeholder = "notes";
+                inp.style.width = "70px";
+                inp.addEventListener("change", (function(k,wk){ return function(e){ updateCell(wk,k,'reps',e.target.value); }; })(key, week));
                 makeTapFriendly(inp);
-                wrapper.appendChild(icon); wrapper.appendChild(inp); tdReps.appendChild(wrapper);
-            } else if(row.type==="exercise"){
-                const inp=document.createElement("input"); inp.value=data.reps||""; inp.placeholder="reps";
-                let range=(week.plan.exerciseTargetReps&&week.plan.exerciseTargetReps[row.name])?week.plan.exerciseTargetReps[row.name]:(defaultTargetRepsMap[row.name]||"");
-                inp.addEventListener("change",(function(k,wk,rng){ return function(e){
-                    let val=e.target.value;
-                    if(rng){ let [min,max]=rng.split('-').map(Number); let num=parseFloat(val); if(!isNaN(num)&&(num<min||num>max)) alert(`Reps ${num} outside ${rng}`); }
+                wrapper.appendChild(icon);
+                wrapper.appendChild(inp);
+                tdReps.appendChild(wrapper);
+            } else if(row.type === "exercise"){
+                const inp = document.createElement("input");
+                inp.value = data.reps || "";
+                inp.placeholder = "reps";
+                let range = (week.plan.exerciseTargetReps && week.plan.exerciseTargetReps[row.name]) ? week.plan.exerciseTargetReps[row.name] : (defaultTargetRepsMap[row.name] || "");
+                inp.addEventListener("change", (function(k,wk,rng){ return function(e){
+                    let val = e.target.value;
+                    if(rng){ let [min,max] = rng.split('-').map(Number); let num = parseFloat(val); if(!isNaN(num) && (num < min || num > max)) alert(`Reps ${num} outside ${rng}`); }
                     updateCell(wk,k,'reps',val);
-                }; })(key,week,range));
-                makeTapFriendly(inp); tdReps.appendChild(inp);
+                }; })(key, week, range));
+                makeTapFriendly(inp);
+                tdReps.appendChild(inp);
             } else {
-                const inp=document.createElement("input"); inp.value=data.reps||""; inp.placeholder="dur";
-                inp.addEventListener("change",(function(k,wk){ return function(e){ updateCell(wk,k,'reps',e.target.value); }; })(key,week));
-                makeTapFriendly(inp); tdReps.appendChild(inp);
+                const inp = document.createElement("input");
+                inp.value = data.reps || "";
+                inp.placeholder = "dur";
+                inp.addEventListener("change", (function(k,wk){ return function(e){ updateCell(wk,k,'reps',e.target.value); }; })(key, week));
+                makeTapFriendly(inp);
+                tdReps.appendChild(inp);
             }
             tr.appendChild(tdReps);
             
-            const tdTarget=document.createElement("td");
-            let targetVal=(week.plan.exerciseTargetReps&&week.plan.exerciseTargetReps[row.name])?week.plan.exerciseTargetReps[row.name]:(defaultTargetRepsMap[row.name]||"");
-            tdTarget.textContent=targetVal; tr.appendChild(tdTarget);
+            // Target
+            const tdTarget = document.createElement("td");
+            let targetVal = (week.plan.exerciseTargetReps && week.plan.exerciseTargetReps[row.name]) ? week.plan.exerciseTargetReps[row.name] : (defaultTargetRepsMap[row.name] || "");
+            tdTarget.textContent = targetVal;
+            tr.appendChild(tdTarget);
             
-            const tdHold=document.createElement("td");
-            const inpHold=document.createElement("input"); inpHold.value=data.holdSec||""; inpHold.placeholder="s";
-            inpHold.addEventListener("change",(function(k,wk){ return function(e){ updateCell(wk,k,'holdSec',e.target.value); }; })(key,week));
-            makeTapFriendly(inpHold); tdHold.appendChild(inpHold); tr.appendChild(tdHold);
+            // Hold
+            const tdHold = document.createElement("td");
+            const inpHold = document.createElement("input");
+            inpHold.value = data.holdSec || "";
+            inpHold.placeholder = "s";
+            inpHold.addEventListener("change", (function(k,wk){ return function(e){ updateCell(wk,k,'holdSec',e.target.value); }; })(key, week));
+            makeTapFriendly(inpHold);
+            tdHold.appendChild(inpHold);
+            tr.appendChild(tdHold);
             
-            const tdDur=document.createElement("td");
-            const dayDate=rows.find(r=>r.type==="separator"&&r.day===row.day)?.date;
-            const durSec=dayDate?getDailyDuration(dayDate):null;
-            tdDur.textContent=durSec?formatWorkoutTime(durSec):"--:--:--"; tr.appendChild(tdDur);
+            // Duration
+            const tdDur = document.createElement("td");
+            const dayDate = rows.find(r => r.type === "separator" && r.day === row.day)?.date;
+            const durSec = dayDate ? getDailyDuration(dayDate) : null;
+            tdDur.textContent = durSec ? formatWorkoutTime(durSec) : "--:--:--";
+            tr.appendChild(tdDur);
             
-            const tdVarNotes=document.createElement("td");
-            const container=document.createElement("div"); container.className="var-notes-container";
-            const inpVar=document.createElement("input"); inpVar.value=data.variation||""; inpVar.placeholder="Variation";
-            inpVar.addEventListener("change",(function(k,wk){ return function(e){ updateCell(wk,k,'variation',e.target.value); }; })(key,week));
+            // Variation & Notes
+            const tdVarNotes = document.createElement("td");
+            const container = document.createElement("div");
+            container.className = "var-notes-container";
+            const inpVar = document.createElement("input");
+            inpVar.value = data.variation || "";
+            inpVar.placeholder = "Variation";
+            inpVar.addEventListener("change", (function(k,wk){ return function(e){ updateCell(wk,k,'variation',e.target.value); }; })(key, week));
             makeTapFriendly(inpVar);
-            const inpNotes=document.createElement("input"); inpNotes.value=data.notes||""; inpNotes.placeholder="Notes";
-            inpNotes.addEventListener("change",(function(k,wk){ return function(e){ updateCell(wk,k,'notes',e.target.value); }; })(key,week));
+            const inpNotes = document.createElement("input");
+            inpNotes.value = data.notes || "";
+            inpNotes.placeholder = "Notes";
+            inpNotes.addEventListener("change", (function(k,wk){ return function(e){ updateCell(wk,k,'notes',e.target.value); }; })(key, week));
             makeTapFriendly(inpNotes);
-            container.appendChild(inpVar); container.appendChild(inpNotes);
-            tdVarNotes.appendChild(container); tr.appendChild(tdVarNotes);
+            container.appendChild(inpVar);
+            container.appendChild(inpNotes);
+            tdVarNotes.appendChild(container);
+            tr.appendChild(tdVarNotes);
+            
             tbody.appendChild(tr);
         }
-        document.getElementById("weekStartDate").value=week.startDate;
+        document.getElementById("weekStartDate").value = week.startDate;
         updateSummaryOnly();
-        const todayStr=toLocalDateString(new Date());
+        const todayStr = toLocalDateString(new Date());
         updateTodayDurationDisplay(todayStr);
         applyColumnWidths();
         initResizableColumns();
@@ -806,10 +886,16 @@
     function deleteCurrentWeek(){ if(allWeeks.length<=1){ alert("Cannot delete only week"); return; } if(confirm(`Delete Week ${allWeeks[currentWeekIndex].weekNumber}?`)){ allWeeks.splice(currentWeekIndex,1); if(currentWeekIndex>=allWeeks.length) currentWeekIndex=allWeeks.length-1; renderWeekSelect(); renderTable(); saveAllData(); renumberWeeks(); } }
     function exportToExcel(){ let wb=XLSX.utils.book_new(); for(let idx=0;idx<allWeeks.length;idx++){ let week=allWeeks[idx]; let rows=buildRowListFromPlan(week.plan,week.startDate); let sheet=[["Exercise","Weight","Sets","Reps","Target","Hold","Duration","Variation","Notes"]]; for(let row of rows){ if(row.type==="separator") sheet.push([row.name,"","","","","","","",""]); else if(row.type==="rest") sheet.push(["Rest Day","","","","","","","",""]); else{ let key=getRowKey(row); let d=week.data[key]||{}; let dayDate=rows.find(r=>r.type==="separator"&&r.day===row.day)?.date; let dur=dayDate?getDailyDuration(dayDate):null; let durStr=dur?formatWorkoutTime(dur):""; sheet.push([row.name, d.weight, d.sets, d.reps, (week.plan.exerciseTargetReps?.[row.name]||defaultTargetRepsMap[row.name]||""), d.holdSec, durStr, d.variation, d.notes]); } } let ws=XLSX.utils.aoa_to_sheet(sheet); XLSX.utils.book_append_sheet(wb,ws,`Week_${week.weekNumber}`); } let durations=getAllDurations(); let durSheet=[["Date","Duration (seconds)","Duration (HH:MM:SS)"]]; for(let [date,sec] of Object.entries(durations)) durSheet.push([date,sec,formatWorkoutTime(sec)]); let wsDur=XLSX.utils.aoa_to_sheet(durSheet); XLSX.utils.book_append_sheet(wb,wsDur,"Durations"); XLSX.writeFile(wb,`Workout_Log.xlsx`); }
     function exportJson(){ let data={ allWeeks, currentWeekIndex, futurePlan, dailyDurations: getAllDurations() }; let jsonStr=JSON.stringify(data,null,2); let blob=new Blob([jsonStr],{type:'application/json'}); let url=URL.createObjectURL(blob); let a=document.createElement('a'); a.href=url; a.download='workout_backup.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); alert("JSON backup saved."); }
-    function importJson(file){ let reader=new FileReader(); reader.onload=function(e){ try{ let data=JSON.parse(e.target.result); if(data.allWeeks && data.currentWeekIndex!==undefined && data.futurePlan){ allWeeks=data.allWeeks; currentWeekIndex=data.currentWeekIndex; futurePlan=data.futurePlan; if(data.dailyDurations) setAllDurations(data.dailyDurations); saveAllData(); renderWeekSelect(); renderTable(); renumberWeeks(); alert("JSON imported."); } else alert("Invalid JSON."); } catch(err){ alert("Error parsing JSON."); } }; reader.readAsText(file); }
-    let editorPlan=null;
+    function importJson(file){ let reader=new FileReader(); reader.onload=function(e){ try{ let data=JSON.parse(e.target.result); if(data.allWeeks && data.currentWeekIndex!==undefined && data.futurePlan){ allWeeks=data.allWeeks; currentWeekIndex=data.currentWeekIndex; futurePlan=data.futurePlan; // ضمان وجود sets للتمارين
+        for(let dayName in futurePlan.exercisesByDay){
+            for(let ex of futurePlan.exercisesByDay[dayName]){
+                if(!futurePlan.exerciseSets[ex]) futurePlan.exerciseSets[ex] = defaultSetsMap[ex] || "3";
+                if(!futurePlan.exerciseTargetReps[ex]) futurePlan.exerciseTargetReps[ex] = defaultTargetRepsMap[ex] || "10-12";
+            }
+        }
+        if(data.dailyDurations) setAllDurations(data.dailyDurations); saveAllData(); renderWeekSelect(); renderTable(); renumberWeeks(); alert("JSON imported."); } else alert("Invalid JSON."); } catch(err){ alert("Error parsing JSON."); } }; reader.readAsText(file); }
+    let editorPlan = null;
     
-    // تحريك اليوم كاملاً (الاسم فقط، مع بقاء التمارين مع الاسم)
     function moveDayInEditor(index, direction) {
         if ((direction === -1 && index === 0) || (direction === 1 && index === editorPlan.days.length-1)) return;
         const newIndex = index + direction;
@@ -817,7 +903,6 @@
         refreshEditorDaysUI();
     }
     
-    // تحريك تمرين داخل نفس اليوم
     function moveExerciseInDay(dayIndex, exIndex, direction) {
         const dayName = editorPlan.days[dayIndex];
         const exercises = editorPlan.exercisesByDay[dayName];
@@ -887,12 +972,23 @@
                 const einp = document.createElement("input");
                 einp.value = exName;
                 einp.style.width = "180px";
-                einp.onchange = (function(dn, idx2) {
+                einp.onchange = (function(dn, idx2, oldEx) {
                     return function(e) {
-                        editorPlan.exercisesByDay[dn][idx2] = e.target.value;
+                        const newEx = e.target.value;
+                        if (oldEx === newEx) return;
+                        // نقل البيانات من الاسم القديم إلى الجديد
+                        if (editorPlan.exerciseSets[oldEx]) {
+                            editorPlan.exerciseSets[newEx] = editorPlan.exerciseSets[oldEx];
+                            delete editorPlan.exerciseSets[oldEx];
+                        }
+                        if (editorPlan.exerciseTargetReps[oldEx]) {
+                            editorPlan.exerciseTargetReps[newEx] = editorPlan.exerciseTargetReps[oldEx];
+                            delete editorPlan.exerciseTargetReps[oldEx];
+                        }
+                        editorPlan.exercisesByDay[dn][idx2] = newEx;
                         refreshEditorDaysUI();
                     };
-                })(day, j);
+                })(day, j, exName);
                 const exMoveDiv = document.createElement("div");
                 exMoveDiv.className = "exercise-move-buttons";
                 const exUpBtn = document.createElement("button"); exUpBtn.textContent = "↑"; exUpBtn.title = "Move exercise up";
@@ -928,7 +1024,12 @@
             const addEx = document.createElement("button"); addEx.textContent = "+ Add Exercise";
             addEx.onclick = () => {
                 if (!editorPlan.exercisesByDay[day]) editorPlan.exercisesByDay[day] = [];
-                editorPlan.exercisesByDay[day].push("New Exercise");
+                const newExName = "New Exercise";
+                editorPlan.exercisesByDay[day].push(newExName);
+                if (!editorPlan.exerciseSets) editorPlan.exerciseSets = {};
+                editorPlan.exerciseSets[newExName] = "3";
+                if (!editorPlan.exerciseTargetReps) editorPlan.exerciseTargetReps = {};
+                editorPlan.exerciseTargetReps[newExName] = "10-12";
                 refreshEditorDaysUI();
             };
             exDiv.appendChild(addEx);
@@ -988,7 +1089,22 @@
         refreshEditorDaysUI(); 
         document.getElementById("planEditorModal").style.display = "flex"; 
     }
-    function saveFuturePlan(){ if(editorPlan){ futurePlan=JSON.parse(JSON.stringify(editorPlan)); saveAllData(); document.getElementById("planEditorModal").style.display="none"; alert("Future plan saved."); } }
+    function saveFuturePlan(){ 
+        if(editorPlan){ 
+            futurePlan = JSON.parse(JSON.stringify(editorPlan)); 
+            saveAllData(); 
+            // تحديث خطة الأسبوع الحالي لتعكس التغييرات (مع الحفاظ على البيانات المسجلة)
+            if(allWeeks[currentWeekIndex]) {
+                // نحتفظ بالبيانات المسجلة (data) ولكن نحدث الخطة
+                const oldData = allWeeks[currentWeekIndex].data;
+                allWeeks[currentWeekIndex].plan = JSON.parse(JSON.stringify(futurePlan));
+                allWeeks[currentWeekIndex].data = oldData; // نعيد البيانات القديمة
+            }
+            renderTable();
+            document.getElementById("planEditorModal").style.display = "none"; 
+            alert("Future plan saved. Current week updated.");
+        } 
+    }
     function updateWorkoutReadiness(){ const vitalityData=JSON.parse(localStorage.getItem('vEliteFinal'))||{}; let latestEntry=null,latestKey=null; for(let key in vitalityData) if(vitalityData[key]?.hrM && vitalityData[key].hrM>0) if(!latestKey||key>latestKey){ latestKey=key; latestEntry=vitalityData[key]; } const badgeDiv=document.getElementById('readinessAdviceWorkout'); if(!badgeDiv) return; let scoreSpan=badgeDiv.querySelector('.readiness-score'); if(latestEntry){ let hr=latestEntry.hrM, sleep=latestEntry.sleep; let baseline = parseFloat(localStorage.getItem('userBaselineHR')); if (isNaN(baseline) || baseline <= 0) baseline = 70; let deviation = hr - baseline; let adviceShort="", bgColor="", textColor="white"; if(sleep>0 && sleep<5){ adviceShort="Rest day (sleep deprived)"; bgColor="#e74c3c"; } else if(deviation <= -5){ adviceShort="Peak readiness – increase weights 5‑10%"; bgColor="#2ecc71"; } else if(deviation >= -4 && deviation <= 4){ adviceShort="Stable – maintain weights"; bgColor="#f1c40f"; textColor="#2c3e50"; } else if(deviation >= 5 && deviation <= 10){ adviceShort="Reduce load – lower weights 10‑20%"; bgColor="#e74c3c"; } else if(deviation > 10){ adviceShort="High fatigue – rest or light session"; bgColor="#e74c3c"; } if(scoreSpan){ scoreSpan.style.backgroundColor=bgColor; scoreSpan.style.color=textColor; scoreSpan.style.padding="4px 12px"; scoreSpan.style.borderRadius="40px"; scoreSpan.innerHTML=adviceShort; } badgeDiv.style.borderLeftColor=bgColor; } else { if(scoreSpan){ scoreSpan.style.backgroundColor="#6c757d"; scoreSpan.style.color="white"; scoreSpan.innerHTML="No data yet. Record morning HR in Vitality Pro."; } } }
     function updateGoalProgress(){ if(allWeeks.length===0) return; let currentLoad=calculateTotals(allWeeks[currentWeekIndex]).totalLoad; let goal=parseFloat(localStorage.getItem('weeklyGoal')||0); let goalSpan=document.getElementById('goalProgress'); if(goalSpan){ if(!isNaN(goal)&&goal>0){ let percent=(currentLoad/goal*100).toFixed(0); goalSpan.innerHTML=` (${percent}%)`; } else goalSpan.innerHTML=''; } }
 
