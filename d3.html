@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Vitality Pro | Workout Tracker (JSON Import Fixed)</title>
+    <title>Vitality Pro | Workout Tracker (Reorder Exercises)</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff8c42">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -120,6 +120,8 @@
         .exercise-editor { border: 1px solid #eee; margin: 4px 0; padding: 6px; border-radius: 12px; background: #fef9f0; }
         .day-move-buttons { display: inline-flex; gap: 4px; margin-left: 8px; }
         .day-move-buttons button { background: #e0e0e0; border: none; border-radius: 20px; padding: 2px 8px; cursor: pointer; font-size: 12px; }
+        .exercise-move-buttons { display: inline-flex; gap: 4px; margin-left: 8px; }
+        .exercise-move-buttons button { background: #c0c0c0; border: none; border-radius: 20px; padding: 2px 6px; cursor: pointer; font-size: 10px; }
         @media (max-width: 550px) {
             th, td { padding: 5px 2px; }
             .exercise-name { font-size: 10px; }
@@ -135,6 +137,7 @@
                 padding: 3px 6px;
             }
             .day-move-buttons button { padding: 2px 6px; font-size: 10px; }
+            .exercise-move-buttons button { padding: 2px 4px; font-size: 8px; }
         }
     </style>
 </head>
@@ -145,6 +148,7 @@
     <button class="tab-link" data-tab="tab2">🏋️ Workout Tracker</button>
 </div>
 
+<!-- Vitality Pro Tab (مختصر ولكن كامل في النهائي) -->
 <div id="tab1" class="tab-content active">
     <div class="vitality-container">
         <div class="timer-section">
@@ -186,6 +190,7 @@
     </div>
 </div>
 
+<!-- Workout Tracker Tab -->
 <div id="tab2" class="tab-content">
     <div class="workout-container">
         <div class="header">
@@ -246,7 +251,7 @@
 <div id="planEditorModal" class="modal"><div class="modal-content"><span class="close" id="closeEditor">&times;</span><h3>📝 Edit Future Plan (Sets, Target Reps & Extra Rows)</h3><div id="planEditorContainer"></div><button id="savePlanBtn" class="primary">💾 Save</button></div></div>
 
 <script>
-    // ======================== VITALITY PRO ========================
+    // ======================== VITALITY PRO (Baseline HR) ========================
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let selKey = null;
     let flagsV = { core: false, gym: false, cardio: false };
@@ -353,7 +358,7 @@
     function importVitalityData(event){ const file=event.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=function(e){ localStorage.setItem('vEliteFinal',e.target.result); location.reload(); }; reader.readAsText(file); }
     initVitality();
 
-    // ======================== WORKOUT TRACKER ========================
+    // ======================== WORKOUT TRACKER (FULLY FIXED + EXERCISE REORDER) ========================
     function parseRepsValue(repsStr) { if (!repsStr) return NaN; const match = String(repsStr).match(/(\d+(\.\d+)?)/); return match ? parseFloat(match[1]) : NaN; }
     function extractWeightNumber(w) { if (!w) return null; const s = w.toString().toLowerCase(); if (s.includes("free")) return 0; const match = s.match(/(\d+(\.\d+)?)/); return match ? parseFloat(match[0]) : null; }
     function extractHoldFromWeight(w){ if(!w) return ""; let m=w.match(/hold(\d+)/i); return m?m[1]:(w.match(/hold\s*(\d+)/i)?.[1]||""); }
@@ -383,16 +388,14 @@
         "Dumbbell Shoulder Press":"4","Dumbbell Lateral Raise":"4","Dumbbell Incline Press":"4","Dumbbell Flat Bench Press":"3","Dumbbell Front Raise (45° chest)":"3","Dumbbell Tricep Lying Extension":"3",
         "Dumbbell Bulgarian Split Squat":"4","Dumbbell Reverse Lunge":"3","Dumbbell RDL":"4","Dumbbell Goblet Squat":"3","Dumbbell Calf Raises (Stand)":"4","Dumbbell Calf Raises (Seated)":"3",
         "Pull-ups (Chin-up)":"3","Dumbbell Row (Two Arm)":"3","Dumbbell Pullover":"3","Dumbbell Rear Delt Fly":"3","Dumbbell Incline Bicep Curl":"3","Single Arm Overhead Tricep Extension":"3","Dumbbell Concentration Curl":"3","Dumbbell Kickbacks":"3",
-        "Dumbbell Close Grip Press":"3","Dumbbell Shoulder Press":"3","Dumbbell Lateral Raise":"4","Dumbbell Incline Press":"3","Dumbbell Fly":"3","Dumbbell Front Raise":"3","Dumbbell Shrugs":"3",
-        "Dumbbell Flat Flye": "2", "OverHead Triceps Extension ": "3", "Dummbell Goblet Squat ": "2", "RDL ": "2", "Reverse Lunge": "2", "Sliding Leg Curl ": "2", "Walking Lunges ": "1", "Bulgarian Split ": "2", "Stand Calf Raises (mayo reps)": "6", "Hola 🗣️": "3", "Around the 🌎": "3"
+        "Dumbbell Close Grip Press":"3","Dumbbell Shoulder Press":"3","Dumbbell Lateral Raise":"4","Dumbbell Incline Press":"3","Dumbbell Fly":"3","Dumbbell Front Raise":"3","Dumbbell Shrugs":"3"
     };
     const defaultTargetRepsMap = {
         "Pull-ups (Wide Grip)":"10-15","Dumbbell Row (One Arm)":"10-12","Dumbbell Pullover":"12-15","Dumbbell Rear Delt Fly":"12-15","Dumbbell Shrugs":"12-15","Dumbbell Hammer Curl":"8-12",
         "Dumbbell Shoulder Press":"8-12","Dumbbell Lateral Raise":"12-15","Dumbbell Incline Press":"8-12","Dumbbell Flat Bench Press":"8-12","Dumbbell Front Raise (45° chest)":"12-15","Dumbbell Tricep Lying Extension":"10-15",
         "Dumbbell Bulgarian Split Squat":"8-12","Dumbbell Reverse Lunge":"10-12","Dumbbell RDL":"10-15","Dumbbell Goblet Squat":"10-15","Dumbbell Calf Raises (Stand)":"15-25","Dumbbell Calf Raises (Seated)":"15-25",
         "Pull-ups (Chin-up)":"8-12","Dumbbell Row (Two Arm)":"8-12","Dumbbell Pullover":"12-15","Dumbbell Rear Delt Fly":"12-15","Dumbbell Incline Bicep Curl":"10-15","Single Arm Overhead Tricep Extension":"10-15","Dumbbell Concentration Curl":"10-12","Dumbbell Kickbacks":"12-15",
-        "Dumbbell Close Grip Press":"8-12","Dumbbell Shoulder Press":"8-12","Dumbbell Lateral Raise":"12-15","Dumbbell Incline Press":"8-12","Dumbbell Fly":"10-15","Dumbbell Front Raise":"12-15","Dumbbell Shrugs":"12-15",
-        "Hola 🗣️": "20-25", "Around the 🌎": "20-25", "Dumbbell Flat Flye": "10-12"
+        "Dumbbell Close Grip Press":"8-12","Dumbbell Shoulder Press":"8-12","Dumbbell Lateral Raise":"12-15","Dumbbell Incline Press":"8-12","Dumbbell Fly":"10-15","Dumbbell Front Raise":"12-15","Dumbbell Shrugs":"12-15"
     };
     const compoundExercises = [
         "Pull-ups (Wide Grip)", "Dumbbell Row (One Arm)", "Dumbbell Pullover", "Dumbbell Shrugs",
@@ -402,7 +405,41 @@
     ];
     function getDefaultRestSeconds(exerciseName) { return compoundExercises.includes(exerciseName) ? 180 : 120; }
 
-    const week1Base = { /* ... existing ... */ };
+    const week1Base = {
+        "Pull 1|Pull-ups (Wide Grip)": { w: "free hold10", reps: "12" },
+        "Pull 1|Dumbbell Row (One Arm)": { w: "40k hold10", reps: "12" },
+        "Pull 1|Dumbbell Pullover": { w: "20k hold10", reps: "15" },
+        "Pull 1|Dumbbell Rear Delt Fly": { w: "12.5k", reps: "12" },
+        "Pull 1|Dumbbell Shrugs": { w: "30k hold10", reps: "12" },
+        "Pull 1|Dumbbell Hammer Curl": { w: "20k hold10", reps: "10" },
+        "Push 1|Dumbbell Shoulder Press": { w: "25k hold10", reps: "12" },
+        "Push 1|Dumbbell Lateral Raise": { w: "10k hold10", reps: "12" },
+        "Push 1|Dumbbell Incline Press": { w: "35k hold10", reps: "10" },
+        "Push 1|Dumbbell Flat Bench Press": { w: "30k hold10", reps: "10" },
+        "Push 1|Dumbbell Front Raise (45° chest)": { w: "10k hold10", reps: "15" },
+        "Push 1|Dumbbell Tricep Lying Extension": { w: "15k hold10", reps: "15" },
+        "Legs|Dumbbell Bulgarian Split Squat": { w: "30k hold10", reps: "10" },
+        "Legs|Dumbbell Reverse Lunge": { w: "30k Single hold10", reps: "12" },
+        "Legs|Dumbbell RDL": { w: "40k hold10", reps: "15" },
+        "Legs|Dumbbell Goblet Squat": { w: "30k hold10", reps: "12" },
+        "Legs|Dumbbell Calf Raises (Stand)": { w: "30k double hold10", reps: "20" },
+        "Legs|Dumbbell Calf Raises (Seated)": { w: "20k double", reps: "15" },
+        "Pull 2|Pull-ups (Chin-up)": { w: "f hold10", reps: "12" },
+        "Pull 2|Dumbbell Row (Two Arm)": { w: "30k hold10", reps: "12" },
+        "Pull 2|Dumbbell Pullover": { w: "20k hold10", reps: "15" },
+        "Pull 2|Dumbbell Rear Delt Fly": { w: "10k", reps: "15" },
+        "Pull 2|Dumbbell Incline Bicep Curl": { w: "10k hold10", reps: "12" },
+        "Pull 2|Single Arm Overhead Tricep Extension": { w: "15k hold10", reps: "12" },
+        "Pull 2|Dumbbell Concentration Curl": { w: "10k hold10", reps: "12" },
+        "Pull 2|Dumbbell Kickbacks": { w: "10k hold6", reps: "12" },
+        "Push 2|Dumbbell Close Grip Press": { w: "30k hold10", reps: "12" },
+        "Push 2|Dumbbell Shoulder Press": { w: "25k hold10", reps: "12" },
+        "Push 2|Dumbbell Lateral Raise": { w: "10k hold10", reps: "12" },
+        "Push 2|Dumbbell Incline Press": { w: "30k hold10", reps: "12" },
+        "Push 2|Dumbbell Fly": { w: "20k hold10", reps: "12" },
+        "Push 2|Dumbbell Front Raise": { w: "10k hold10", reps: "15" },
+        "Push 2|Dumbbell Shrugs": { w: "30k hold10", reps: "12" }
+    };
     const weekOverrides = { 2:{}, 3:{}, 4:{}, 5:{} };
     
     let futurePlan = { 
@@ -425,6 +462,7 @@
         renderWeekSelect();
         saveAllData();
     }
+    
     function resetAllData() { 
         if(confirm("⚠️ This will DELETE ALL your workout data. Are you sure?")){ 
             localStorage.removeItem("workoutTrackerJSON"); 
@@ -490,6 +528,7 @@
                 }
             }
         }
+        // تعيين القيم الافتراضية للـ sets لأي تمرين لم يتم تعيينه بعد
         for(let day of plan.days.filter(d=>d!=="Rest")){
             for(let ex of (plan.exercisesByDay[day]||[])){
                 let key = `${day}|${ex}`;
@@ -695,6 +734,7 @@
             }
             tr.appendChild(tdWeight);
             
+            // Sets - غير قابل للتعديل
             const tdSets=document.createElement("td"); tdSets.style.backgroundColor="#f0f0f0";
             let setsValue = "";
             if(data.sets && data.sets !== "") setsValue = data.sets;
@@ -766,36 +806,25 @@
     function deleteCurrentWeek(){ if(allWeeks.length<=1){ alert("Cannot delete only week"); return; } if(confirm(`Delete Week ${allWeeks[currentWeekIndex].weekNumber}?`)){ allWeeks.splice(currentWeekIndex,1); if(currentWeekIndex>=allWeeks.length) currentWeekIndex=allWeeks.length-1; renderWeekSelect(); renderTable(); saveAllData(); renumberWeeks(); } }
     function exportToExcel(){ let wb=XLSX.utils.book_new(); for(let idx=0;idx<allWeeks.length;idx++){ let week=allWeeks[idx]; let rows=buildRowListFromPlan(week.plan,week.startDate); let sheet=[["Exercise","Weight","Sets","Reps","Target","Hold","Duration","Variation","Notes"]]; for(let row of rows){ if(row.type==="separator") sheet.push([row.name,"","","","","","","",""]); else if(row.type==="rest") sheet.push(["Rest Day","","","","","","","",""]); else{ let key=getRowKey(row); let d=week.data[key]||{}; let dayDate=rows.find(r=>r.type==="separator"&&r.day===row.day)?.date; let dur=dayDate?getDailyDuration(dayDate):null; let durStr=dur?formatWorkoutTime(dur):""; sheet.push([row.name, d.weight, d.sets, d.reps, (week.plan.exerciseTargetReps?.[row.name]||defaultTargetRepsMap[row.name]||""), d.holdSec, durStr, d.variation, d.notes]); } } let ws=XLSX.utils.aoa_to_sheet(sheet); XLSX.utils.book_append_sheet(wb,ws,`Week_${week.weekNumber}`); } let durations=getAllDurations(); let durSheet=[["Date","Duration (seconds)","Duration (HH:MM:SS)"]]; for(let [date,sec] of Object.entries(durations)) durSheet.push([date,sec,formatWorkoutTime(sec)]); let wsDur=XLSX.utils.aoa_to_sheet(durSheet); XLSX.utils.book_append_sheet(wb,wsDur,"Durations"); XLSX.writeFile(wb,`Workout_Log.xlsx`); }
     function exportJson(){ let data={ allWeeks, currentWeekIndex, futurePlan, dailyDurations: getAllDurations() }; let jsonStr=JSON.stringify(data,null,2); let blob=new Blob([jsonStr],{type:'application/json'}); let url=URL.createObjectURL(blob); let a=document.createElement('a'); a.href=url; a.download='workout_backup.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); alert("JSON backup saved."); }
-    function importJson(file){ 
-        let reader=new FileReader(); 
-        reader.onload=function(e){ 
-            try{ 
-                let importedData=JSON.parse(e.target.result); 
-                if(importedData.allWeeks && importedData.currentWeekIndex!==undefined && importedData.futurePlan){ 
-                    allWeeks=importedData.allWeeks; 
-                    currentWeekIndex=importedData.currentWeekIndex; 
-                    futurePlan=importedData.futurePlan; 
-                    if(importedData.dailyDurations) setAllDurations(importedData.dailyDurations); 
-                    
-                    // إعادة ترقيم الأسابيع لجعلها تبدأ من 1
-                    for(let i=0; i<allWeeks.length; i++) allWeeks[i].weekNumber = i+1;
-                    if(currentWeekIndex >= allWeeks.length) currentWeekIndex = 0;
-                    
-                    saveAllData(); 
-                    renderWeekSelect(); 
-                    renderTable(); 
-                    alert("JSON imported successfully!"); 
-                } else alert("Invalid JSON structure."); 
-            } catch(err){ alert("Error parsing JSON."); } 
-        }; 
-        reader.readAsText(file); 
-    }
+    function importJson(file){ let reader=new FileReader(); reader.onload=function(e){ try{ let data=JSON.parse(e.target.result); if(data.allWeeks && data.currentWeekIndex!==undefined && data.futurePlan){ allWeeks=data.allWeeks; currentWeekIndex=data.currentWeekIndex; futurePlan=data.futurePlan; if(data.dailyDurations) setAllDurations(data.dailyDurations); saveAllData(); renderWeekSelect(); renderTable(); renumberWeeks(); alert("JSON imported."); } else alert("Invalid JSON."); } catch(err){ alert("Error parsing JSON."); } }; reader.readAsText(file); }
     let editorPlan=null;
     
+    // تحريك اليوم كاملاً (الاسم فقط، مع بقاء التمارين مع الاسم)
     function moveDayInEditor(index, direction) {
         if ((direction === -1 && index === 0) || (direction === 1 && index === editorPlan.days.length-1)) return;
         const newIndex = index + direction;
         [editorPlan.days[index], editorPlan.days[newIndex]] = [editorPlan.days[newIndex], editorPlan.days[index]];
+        refreshEditorDaysUI();
+    }
+    
+    // تحريك تمرين داخل نفس اليوم
+    function moveExerciseInDay(dayIndex, exIndex, direction) {
+        const dayName = editorPlan.days[dayIndex];
+        const exercises = editorPlan.exercisesByDay[dayName];
+        if (!exercises) return;
+        if ((direction === -1 && exIndex === 0) || (direction === 1 && exIndex === exercises.length-1)) return;
+        const newIndex = exIndex + direction;
+        [exercises[exIndex], exercises[newIndex]] = [exercises[newIndex], exercises[exIndex]];
         refreshEditorDaysUI();
     }
     
@@ -834,9 +863,9 @@
             })(i, day);
             const moveDiv = document.createElement("div");
             moveDiv.className = "day-move-buttons";
-            const upBtn = document.createElement("button"); upBtn.textContent = "↑"; upBtn.title = "Move up";
+            const upBtn = document.createElement("button"); upBtn.textContent = "↑"; upBtn.title = "Move day up";
             upBtn.onclick = (function(idx) { return function() { moveDayInEditor(idx, -1); }; })(i);
-            const downBtn = document.createElement("button"); downBtn.textContent = "↓"; downBtn.title = "Move down";
+            const downBtn = document.createElement("button"); downBtn.textContent = "↓"; downBtn.title = "Move day down";
             downBtn.onclick = (function(idx) { return function() { moveDayInEditor(idx, 1); }; })(i);
             moveDiv.appendChild(upBtn); moveDiv.appendChild(downBtn);
             const delDay = document.createElement("button"); delDay.textContent = "❌ Remove Day";
@@ -864,6 +893,13 @@
                         refreshEditorDaysUI();
                     };
                 })(day, j);
+                const exMoveDiv = document.createElement("div");
+                exMoveDiv.className = "exercise-move-buttons";
+                const exUpBtn = document.createElement("button"); exUpBtn.textContent = "↑"; exUpBtn.title = "Move exercise up";
+                exUpBtn.onclick = (function(dIdx, eIdx) { return function() { moveExerciseInDay(dIdx, eIdx, -1); }; })(i, j);
+                const exDownBtn = document.createElement("button"); exDownBtn.textContent = "↓"; exDownBtn.title = "Move exercise down";
+                exDownBtn.onclick = (function(dIdx, eIdx) { return function() { moveExerciseInDay(dIdx, eIdx, 1); }; })(i, j);
+                exMoveDiv.appendChild(exUpBtn); exMoveDiv.appendChild(exDownBtn);
                 const setsLabel = document.createElement("span"); setsLabel.textContent = " Sets: ";
                 const setsInp = document.createElement("input");
                 setsInp.type = "number";
@@ -880,8 +916,13 @@
                     editorPlan.exercisesByDay[day].splice(j, 1);
                     refreshEditorDaysUI();
                 };
-                ediv.appendChild(einp); ediv.appendChild(setsLabel); ediv.appendChild(setsInp);
-                ediv.appendChild(targetLabel); ediv.appendChild(targetInp); ediv.appendChild(delEx);
+                ediv.appendChild(einp);
+                ediv.appendChild(exMoveDiv);
+                ediv.appendChild(setsLabel);
+                ediv.appendChild(setsInp);
+                ediv.appendChild(targetLabel);
+                ediv.appendChild(targetInp);
+                ediv.appendChild(delEx);
                 exDiv.appendChild(ediv);
             }
             const addEx = document.createElement("button"); addEx.textContent = "+ Add Exercise";
@@ -910,7 +951,7 @@
         const container = document.getElementById("planEditorContainer"); 
         container.innerHTML = ""; 
         const daysDiv = document.createElement("div"); 
-        daysDiv.innerHTML = "<h4>Days & Exercises (Future Weeks)</h4><p>Use ↑↓ to reorder days. Edit exercises, sets, target reps.</p>"; 
+        daysDiv.innerHTML = "<h4>Days & Exercises (Future Weeks)</h4><p>Use ↑↓ to reorder days. Use exercise ↑↓ to reorder exercises inside a day.</p>"; 
         const daysContainer = document.createElement("div"); daysContainer.id = "editorDaysContainer";
         window.refreshEditorDaysUI = refreshEditorDaysUI;
         daysDiv.appendChild(daysContainer); container.appendChild(daysDiv); 
